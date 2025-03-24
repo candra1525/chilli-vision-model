@@ -1,14 +1,20 @@
+# Gunakan Python 3.12 sebagai base image
 FROM python:3.12
 
+# Set direktori kerja di dalam container
 WORKDIR /app
 
+# Salin file requirements.txt dan install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Install OpenGL dependency
-RUN apt-get update && apt-get install -y libgl1
+# Instal dependensi sistem yang dibutuhkan untuk OpenCV
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 && \
+    pip install --no-cache-dir -r requirements.txt
 
+# Salin seluruh kode proyek ke dalam container
 COPY . .
 
-CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:5000", "app:app"]
-
+# Jalankan aplikasi dengan gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
