@@ -21,7 +21,7 @@ API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
 
 # Load model YOLOv11
-MODEL_PATH = "app/models/chilli_vision.pt"
+MODEL_PATH = "models/chilli_vision.pt"
 try:
     model = YOLO(MODEL_PATH)
     model.to("cpu")  # Memindahkan model ke CPU
@@ -32,7 +32,7 @@ except Exception as e:
 
 
 # Path ke file CSV
-CSV_PATH = "app/data/penyakit_tanaman_cabai.csv"
+CSV_PATH = "data/penyakit_tanaman_cabai.csv"
 
 # Konfigurasi Cloudinary
 cloudinary.config(
