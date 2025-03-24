@@ -10,4 +10,4 @@ RUN apt-get update && apt-get install -y libgl1
 
 COPY . .
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "app:app"]
