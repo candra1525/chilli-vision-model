@@ -23,6 +23,3 @@ python app.py
 ```
 deactivate
 ```
-
-APP : Simpan gambar asli + anotate
-APP2 : Tidak simpan gambar asli

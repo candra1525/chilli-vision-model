@@ -21,7 +21,7 @@ API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
 
 # Load model YOLOv11
-MODEL_PATH = "models/chilli_vision.pt"
+MODEL_PATH = "models/chilli_vision_best_model.pt"
 try:
     model = YOLO(MODEL_PATH)
     model.to("cpu")  # Memindahkan model ke CPU
@@ -30,9 +30,8 @@ except Exception as e:
     print(f"Error memuat model: {e}")
     exit(1)
 
-
 # Path ke file CSV
-CSV_PATH = "data/penyakit_tanaman_cabai.csv"
+CSV_PATH = "data/penyakit_tanaman_cabai_2_fix.csv"
 
 # Konfigurasi Cloudinary
 cloudinary.config(
@@ -86,7 +85,7 @@ def predict():
     # Mulai hitung waktu deteksi
     start_time = time.time()
     
-    # Deteksi menggunakan YOLOv8
+    # Deteksi menggunakan YOLOv11-L
     results = model(image)[0]
     
     detection_time = time.time() - start_time
@@ -137,15 +136,35 @@ def predict():
     # Upload ke Cloudinary
     cloudinary_result = cloudinary.uploader.upload(buffer.tobytes(), folder="chilli_diseases")
 
-    # Kumpulkan disease_info unik
-    unique_disease_info = {det["label"]: det["disease_info"] for det in detections}
+    # Ambil daftar nama penyakit unik
+    unique_disease_names = []
+    for det in detections:
+        disease_info = det.get("disease_info")
+        if disease_info is not None:
+            disease_name = disease_info.get("nama_penyakit", "").strip()
+            if disease_name and disease_name not in unique_disease_names:
+                unique_disease_names.append(disease_name)
+
+    unique_name_disease = ", ".join(unique_disease_names)
+
+    # Kumpulkan ringkasan deteksi unik
+    detections_summary = []
+    seen_labels = set()
+    for det in detections:
+        if det["label"] not in seen_labels:
+            detections_summary.append({
+                "label": det["label"],
+                "disease_info": det["disease_info"]
+            })
+            seen_labels.add(det["label"])
 
     return jsonify({
         "message": "Deteksi berhasil",
         "detection_time": f"{detection_time:.2f} detik",
-        "disease_info": list(unique_disease_info.values()),
         "detections": detections,
-        "image_url": cloudinary_result["secure_url"]  # URL gambar di Cloudinary
+        "detections_summary": detections_summary,  
+        "unique_name_disease": unique_name_disease,
+        "image_url": cloudinary_result["secure_url"]
     }), 200
 
 @app.route("/", methods=["GET"])
@@ -155,4 +174,3 @@ def test():
 # Jalankan Flask server 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv("PORT", 5000)))
-
