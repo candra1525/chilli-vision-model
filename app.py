@@ -59,7 +59,7 @@ def get_disease_info(label):
         print(f"Error membaca CSV: {e}")
         return None
 
-@app.route("/predict", methods=["POST"])
+@app.route("/detect", methods=["POST"])
 def predict():
     if "file" not in request.files:
         return jsonify({"error": "Tidak ada file yang diunggah"}), 400
