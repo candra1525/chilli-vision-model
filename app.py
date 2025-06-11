@@ -31,7 +31,8 @@ except Exception as e:
     exit(1)
 
 # Path ke file CSV
-CSV_PATH = "data/penyakit_tanaman_cabai_2_fix.csv"
+# CSV_PATH = "data/penyakit_tanaman_cabai_2_fix.csv"
+CSV_PATH = "data/penyakit_cabai_fix.csv"
 
 # Konfigurasi Cloudinary
 cloudinary.config(
