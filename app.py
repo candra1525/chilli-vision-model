@@ -95,7 +95,7 @@ def predict():
     if results.boxes is not None:
         for box in results.boxes:
             conf = float(box.conf[0])  
-            if conf >= 0.65:
+            if conf >= 0.5:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])  
                 label = model.names[int(box.cls[0])]  
                 conf_percent = f"{conf * 100:.0f}%"
